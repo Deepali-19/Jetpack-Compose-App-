@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "381795903325",
+    "firebase_url": "https://android6prac-default-rtdb.firebaseio.com",
+    "project_id": "android6prac",
+    "storage_bucket": "android6prac.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:381795903325:android:429aa9240871416c162ab4",
+        "android_client_info": {
+          "package_name": "com.example.android6month"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxth8l9IFxRg0qguCpACfi3MXukmLG0lc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:381795903325:android:eaa5df9428e2fda8162ab4",
+        "android_client_info": {
+          "package_name": "com.example.jcproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxth8l9IFxRg0qguCpACfi3MXukmLG0lc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
