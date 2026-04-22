@@ -27,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.jetpackcomposeapp.Drawer.DrawerItem
 import com.example.jetpackcomposeapp.Drawer.NavDrawerWithNavigation
 import com.example.jetpackcomposeapp.ImageRecognition.AIScanScreen
+import com.example.jetpackcomposeapp.Topic.ExoPlayerResScreen
 import com.example.jetpackcomposeapp.View.HomeScreen
 import com.example.jetpackcomposeapp.View.ProfileScreen
 
@@ -37,6 +38,7 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
 }
 
 val navItems = listOf(Screen.Home, Screen.Search, Screen.Profile)
+private val videoDrawerItem = DrawerItem(route = "video", title = "Video")
 
 @Composable
 fun MainAppContainer(outerNavController: NavHostController) {
@@ -44,8 +46,8 @@ fun MainAppContainer(outerNavController: NavHostController) {
     val navBackStackEntry by innerNavController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val currentRoute = currentDestination?.route
-    val currentTitle = navItems.firstOrNull { it.route == currentRoute }?.label ?: "Store"
-    val drawerItems = navItems.map { DrawerItem(route = it.route, title = it.label) }
+    val drawerItems = navItems.map { DrawerItem(route = it.route, title = it.label) } + videoDrawerItem
+    val currentTitle = drawerItems.firstOrNull { it.route == currentRoute }?.title ?: "Store"
 
     NavDrawerWithNavigation(
         title = currentTitle,
@@ -93,6 +95,7 @@ fun MainAppContainer(outerNavController: NavHostController) {
                 composable(Screen.Home.route) { HomeScreen(outerNavController) }
                 composable(Screen.Search.route) { AIScanScreen() }
                 composable(Screen.Profile.route) { ProfileScreen(outerNavController) }
+                composable(videoDrawerItem.route) { ExoPlayerResScreen() }
             }
         }
     }
