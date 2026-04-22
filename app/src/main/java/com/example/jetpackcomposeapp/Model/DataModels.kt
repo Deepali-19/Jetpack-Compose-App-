@@ -40,6 +40,14 @@ data class UserResponse(
     val avatar: String? = null
 )
 
+data class ProfileResponse(
+    val id: Int? = null,
+    val name: String? = null,
+    val email: String? = null,
+    val avatar: String? = null,
+    val role: String? = null
+)
+
 data class ProductResponseItem(
     @SerializedName("id")
     val id: Int,

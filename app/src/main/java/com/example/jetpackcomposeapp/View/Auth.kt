@@ -1,9 +1,9 @@
 package com.example.jetpackcomposeapp.View
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -33,12 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.gson.Gson
 import com.example.jetpackcomposeapp.Model.ApiErrorResponse
 import com.example.jetpackcomposeapp.Model.RetrofitClient
 import com.example.jetpackcomposeapp.Model.UserRequest
 import com.example.jetpackcomposeapp.Navigation.Dest
 import com.example.jetpackcomposeapp.ViewModels.LoginViewModel
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
 @Composable
@@ -92,20 +93,48 @@ fun RegisterScreen(navController: NavController) {
         Button(
             onClick = {
                 scope.launch {
+                    val normalizedName = name.trim()
+                    val normalizedEmail = email.trim().lowercase()
+                    val normalizedPassword = password.trim()
+
+                    when {
+                        normalizedName.isBlank() -> {
+                            errorMessage = "Please enter your name"
+                            return@launch
+                        }
+
+                        normalizedEmail.isBlank() -> {
+                            errorMessage = "Please enter your email"
+                            return@launch
+                        }
+
+                        normalizedPassword.length < 4 -> {
+                            errorMessage = "Password must be at least 4 characters"
+                            return@launch
+                        }
+                    }
+
                     isLoading = true
                     errorMessage = null
 
                     try {
                         val response = RetrofitClient.apiService.createUser(
                             UserRequest(
-                                name = name,
-                                email = email,
-                                password = password,
+                                name = normalizedName,
+                                email = normalizedEmail,
+                                password = normalizedPassword,
                                 avatar = "https://picsum.photos/200"
                             )
                         )
 
                         if (response.isSuccessful) {
+                            navController.currentBackStackEntry
+                                ?.savedStateHandle
+                                ?.set("prefill_email", normalizedEmail)
+                            navController.currentBackStackEntry
+                                ?.savedStateHandle
+                                ?.set("prefill_password", normalizedPassword)
+
                             navController.navigate(Dest.LOGIN) {
                                 popUpTo(Dest.REGISTER) { inclusive = true }
                             }
@@ -157,6 +186,22 @@ fun RegisterScreen(navController: NavController) {
 @Composable
 fun LoginScreen(navController: NavController) {
     val viewModel: LoginViewModel = viewModel()
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+
+    LaunchedEffect(savedStateHandle) {
+        val prefillEmail = savedStateHandle?.get<String>("prefill_email")
+        val prefillPassword = savedStateHandle?.get<String>("prefill_password")
+
+        if (!prefillEmail.isNullOrBlank()) {
+            viewModel.email = prefillEmail
+            savedStateHandle.remove<String>("prefill_email")
+        }
+
+        if (!prefillPassword.isNullOrBlank()) {
+            viewModel.password = prefillPassword
+            savedStateHandle.remove<String>("prefill_password")
+        }
+    }
 
     AuthCardLayout(
         title = "Welcome Back",
@@ -189,7 +234,7 @@ fun LoginScreen(navController: NavController) {
 
         Button(
             onClick = {
-                viewModel.login { _, _ ->
+                viewModel.login { accessToken, refreshToken ->
                     navController.navigate(Dest.MAIN) {
                         popUpTo(Dest.LOGIN) { inclusive = true }
                     }

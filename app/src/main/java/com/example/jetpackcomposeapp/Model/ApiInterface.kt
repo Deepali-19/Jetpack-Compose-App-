@@ -3,6 +3,7 @@ package com.example.jetpackcomposeapp.Model
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Query
 
@@ -20,4 +21,9 @@ interface ApiService {
 
     @POST("users")
     suspend fun createUser(@Body user: UserRequest): Response<UserResponse>
+
+    @GET("auth/profile")
+    suspend fun getProfile(
+        @Header("Authorization") token: String
+    ): Response<ProfileResponse>
 }

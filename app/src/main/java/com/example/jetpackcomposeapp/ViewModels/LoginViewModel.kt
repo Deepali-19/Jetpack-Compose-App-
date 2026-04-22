@@ -6,9 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.jetpackcomposeapp.Model.ApiErrorResponse
 import com.example.jetpackcomposeapp.Model.LoginRequest
 import com.example.jetpackcomposeapp.Model.RetrofitClient
 import com.example.jetpackcomposeapp.Utils.DataStoreManager
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
@@ -21,10 +23,30 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     fun login(onSuccess: (String, String) -> Unit) {
         viewModelScope.launch {
+            val normalizedEmail = email.trim().lowercase()
+            val normalizedPassword = password.trim()
+
+            when {
+                normalizedEmail.isBlank() -> {
+                    errorMessage = "Please enter your email"
+                    return@launch
+                }
+
+                normalizedPassword.isBlank() -> {
+                    errorMessage = "Please enter your password"
+                    return@launch
+                }
+            }
+
             isLoading = true
             errorMessage = null
             try {
-                val response = RetrofitClient.apiService.login(LoginRequest(email, password))
+                val response = RetrofitClient.apiService.login(
+                    LoginRequest(
+                        email = normalizedEmail,
+                        password = normalizedPassword
+                    )
+                )
 
                 if (response.isSuccessful) {
                     val body = response.body()
@@ -35,10 +57,22 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                         dataStoreManager.saveTokens(access, refresh)
                         onSuccess(access, refresh)
                     } else {
-                        errorMessage = "Missing token data"
+                        errorMessage = "Login succeeded but no token was returned"
                     }
                 } else {
-                    errorMessage = "Invalid Credentials: ${response.code()}"
+                    val parsedError = response.errorBody()
+                        ?.string()
+                        ?.takeIf { it.isNotBlank() }
+                        ?.let { runCatching { Gson().fromJson(it, ApiErrorResponse::class.java) }.getOrNull() }
+
+                    errorMessage = when (val message = parsedError?.message) {
+                        is List<*> -> message.filterIsInstance<String>().joinToString("\n").ifBlank {
+                            "Invalid credentials. Please register first or check your password."
+                        }
+
+                        is String -> message
+                        else -> "Invalid credentials. Please register first or check your password."
+                    }
                 }
             } catch (e: Exception) {
                 errorMessage = "Network Error: ${e.localizedMessage}"

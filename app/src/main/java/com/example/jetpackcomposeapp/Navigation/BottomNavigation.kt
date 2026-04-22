@@ -28,17 +28,18 @@ import com.example.jetpackcomposeapp.Drawer.DrawerItem
 import com.example.jetpackcomposeapp.Drawer.NavDrawerWithNavigation
 import com.example.jetpackcomposeapp.ImageRecognition.AIScanScreen
 import com.example.jetpackcomposeapp.View.HomeScreen
+import com.example.jetpackcomposeapp.View.ProfileScreen
 
 sealed class Screen(val route: String, val label: String, val icon: ImageVector) {
-    data object Home : Screen("home", "Home", Icons.Default.Home)
-    data object Search : Screen("search", "Search", Icons.Default.Search)
-    data object Profile : Screen("profile", "Profile", Icons.Default.Person)
+    object Home : Screen("home", "Home", Icons.Default.Home)
+    object Search : Screen("search", "Search", Icons.Default.Search)
+    object Profile : Screen("profile", "Profile", Icons.Default.Person)
 }
 
 val navItems = listOf(Screen.Home, Screen.Search, Screen.Profile)
 
 @Composable
-fun MainAppContainer(navController: NavHostController) {
+fun MainAppContainer(outerNavController: NavHostController) {
     val innerNavController = rememberNavController()
     val navBackStackEntry by innerNavController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -82,29 +83,17 @@ fun MainAppContainer(navController: NavHostController) {
                 }
             }
         ) { bottomPadding ->
-        NavHost(
-            navController = innerNavController,
-            startDestination = Screen.Home.route,
-            modifier = Modifier.padding(innerPadding).padding(bottomPadding)
-        ) {
-            composable(Screen.Home.route) { HomeScreen(navController) }
-            composable(Screen.Search.route) { AIScanScreen() }
-            composable(Screen.Profile.route) { ProfileScreen("Profile Content") }
+            NavHost(
+                navController = innerNavController,
+                startDestination = Screen.Home.route,
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .padding(bottomPadding)
+            ) {
+                composable(Screen.Home.route) { HomeScreen(outerNavController) }
+                composable(Screen.Search.route) { AIScanScreen() }
+                composable(Screen.Profile.route) { ProfileScreen(outerNavController) }
+            }
         }
-        }
-    }
-}
-
-@Composable
-fun SearchScreen(text: String) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = text, style = MaterialTheme.typography.headlineMedium)
-    }
-}
-
-@Composable
-fun ProfileScreen(text: String) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = text, style = MaterialTheme.typography.headlineMedium)
     }
 }
