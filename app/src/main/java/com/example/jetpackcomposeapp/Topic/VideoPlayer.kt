@@ -7,8 +7,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.material3.Text
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
@@ -17,8 +19,21 @@ import androidx.media3.ui.PlayerView
 fun ExoPlayerResScreen() {
     val context = LocalContext.current
 
-    val videoUri = remember {
-        val rawId = context.resources.getIdentifier("sample", "raw", context.packageName)
+    val rawId = remember {
+        context.resources.getIdentifier("sample", "raw", context.packageName)
+    }
+
+    if (rawId == 0) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Video file not found. Add sample.mp4 in res/raw")
+        }
+        return
+    }
+
+    val videoUri = remember(rawId) {
         Uri.parse("android.resource://${context.packageName}/$rawId")
     }
 
