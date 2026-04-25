@@ -54,6 +54,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                     val refresh = body?.refresh_token
 
                     if (access != null && refresh != null) {
+                        dataStoreManager.saveUserCredentials(normalizedEmail, normalizedPassword)
                         dataStoreManager.saveTokens(access, refresh)
                         onSuccess(access, refresh)
                     } else {

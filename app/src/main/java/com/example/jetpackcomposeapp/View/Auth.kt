@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -38,12 +39,16 @@ import com.example.jetpackcomposeapp.Model.ApiErrorResponse
 import com.example.jetpackcomposeapp.Model.RetrofitClient
 import com.example.jetpackcomposeapp.Model.UserRequest
 import com.example.jetpackcomposeapp.Navigation.Dest
+import com.example.jetpackcomposeapp.Utils.DataStoreManager
 import com.example.jetpackcomposeapp.ViewModels.LoginViewModel
 import com.google.gson.Gson
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(navController: NavController) {
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
     var name by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -128,6 +133,7 @@ fun RegisterScreen(navController: NavController) {
                         )
 
                         if (response.isSuccessful) {
+                            dataStoreManager.saveUserCredentials(normalizedEmail, normalizedPassword)
                             navController.currentBackStackEntry
                                 ?.savedStateHandle
                                 ?.set("prefill_email", normalizedEmail)

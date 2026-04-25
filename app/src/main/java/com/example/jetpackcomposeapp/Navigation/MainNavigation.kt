@@ -23,10 +23,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.jetpackcomposeapp.Model.LoginRequest
+import com.example.jetpackcomposeapp.Model.RetrofitClient
 import com.example.jetpackcomposeapp.View.CategoryProducts
 import com.example.jetpackcomposeapp.View.RegisterScreen
 import com.example.jetpackcomposeapp.Utils.DataStoreManager
 import com.example.jetpackcomposeapp.View.LoginScreen
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.delay
 
 @Composable
@@ -62,16 +65,52 @@ fun SplashScreen(navController: NavHostController) {
     val dataStoreManager = remember { DataStoreManager(context) }
 
     LaunchedEffect(Unit) {
-        dataStoreManager.accessToken.collect { token ->
-            delay(2000)
+        delay(2000)
 
-            val target = if (!token.isNullOrEmpty()) {
-                Dest.MAIN
-            } else {
-                Dest.REGISTER
+        val token = dataStoreManager.accessToken.first()
+        val savedEmail = dataStoreManager.userEmail.first()
+        val savedPassword = dataStoreManager.userPassword.first()
+
+        if (!token.isNullOrEmpty()) {
+            navController.navigate(Dest.MAIN) {
+                popUpTo(Dest.SPLASH) { inclusive = true }
             }
+        } else if (!savedEmail.isNullOrBlank() && !savedPassword.isNullOrBlank()) {
+            try {
+                val response = RetrofitClient.apiService.login(
+                    LoginRequest(
+                        email = savedEmail,
+                        password = savedPassword
+                    )
+                )
 
-            navController.navigate(target) {
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    val access = body?.access_token
+                    val refresh = body?.refresh_token
+
+                    if (!access.isNullOrBlank() && !refresh.isNullOrBlank()) {
+                        dataStoreManager.saveTokens(access, refresh)
+                        navController.navigate(Dest.MAIN) {
+                            popUpTo(Dest.SPLASH) { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate(Dest.LOGIN) {
+                            popUpTo(Dest.SPLASH) { inclusive = true }
+                        }
+                    }
+                } else {
+                    navController.navigate(Dest.LOGIN) {
+                        popUpTo(Dest.SPLASH) { inclusive = true }
+                    }
+                }
+            } catch (_: Exception) {
+                navController.navigate(Dest.LOGIN) {
+                    popUpTo(Dest.SPLASH) { inclusive = true }
+                }
+            }
+        } else {
+            navController.navigate(Dest.REGISTER) {
                 popUpTo(Dest.SPLASH) { inclusive = true }
             }
         }
