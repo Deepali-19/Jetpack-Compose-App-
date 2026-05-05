@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -71,8 +72,6 @@ dependencies {
     val media3Version = "1.10.0"
 
     //    media player
-    implementation("androidx.media3:media3-exoplayer:1.x.x")
-    implementation("androidx.media3:media3-ui:1.x.x")
     implementation("androidx.media3:media3-exoplayer:${media3Version}")
     implementation("androidx.media3:media3-ui-compose:$media3Version")
     implementation("androidx.media3:media3-ui:${media3Version}")
@@ -80,5 +79,13 @@ dependencies {
     implementation("androidx.media3:media3-session:1.10.0")
 
     implementation("androidx.compose.material:material-icons-extended")
+    implementation("com.google.android.material:material:1.12.0")
+
+    implementation("com.github.ZEGOCLOUD:zego_uikit_prebuilt_call_android:3.5.0")
+    implementation("com.guolindev.permissionx:permissionx:1.7.1")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-messaging-ktx")
 
 }

@@ -1,20 +1,16 @@
 package com.example.jetpackcomposeapp.Navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -31,6 +27,7 @@ import com.example.jetpackcomposeapp.Topic.FullAudioPlayerScreen
 import com.example.jetpackcomposeapp.Topic.ExoPlayerResScreen
 import com.example.jetpackcomposeapp.Topic.SpeechToTextAndTTS
 import com.example.jetpackcomposeapp.Topic.UploadVideoScreen
+import com.example.jetpackcomposeapp.Topic.vc.VideoCallScreen
 import com.example.jetpackcomposeapp.View.HomeScreen
 import com.example.jetpackcomposeapp.View.ProfileScreen
 
@@ -45,6 +42,7 @@ private val videoDrawerItem = DrawerItem(route = "video", title = "Video")
 private val uploadVideoDrawerItem = DrawerItem(route = "upload_video", title = "Upload Video")
 private val ttsSttDrawerItem = DrawerItem(route = "tts_stt", title = "TTS&STT")
 private val audioDrawerItem = DrawerItem(route = "audio_player", title = "Audio Player")
+private val videoCallDrawerItem = DrawerItem(route = "video_call", title = "VIDEO CALL")
 
 @Composable
 fun MainAppContainer(outerNavController: NavHostController) {
@@ -56,7 +54,8 @@ fun MainAppContainer(outerNavController: NavHostController) {
         videoDrawerItem +
         uploadVideoDrawerItem +
         ttsSttDrawerItem +
-        audioDrawerItem
+        audioDrawerItem +
+        videoCallDrawerItem
     val currentTitle = drawerItems.firstOrNull { it.route == currentRoute }?.title ?: "Store"
 
     NavDrawerWithNavigation(
@@ -109,6 +108,7 @@ fun MainAppContainer(outerNavController: NavHostController) {
                 composable(uploadVideoDrawerItem.route) { UploadVideoScreen() }
                 composable(ttsSttDrawerItem.route) { SpeechToTextAndTTS() }
                 composable(audioDrawerItem.route) { FullAudioPlayerScreen() }
+                composable(videoCallDrawerItem.route) { VideoCallScreen() }
             }
         }
     }
