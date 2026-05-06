@@ -27,6 +27,7 @@ import com.example.jetpackcomposeapp.Topic.FullAudioPlayerScreen
 import com.example.jetpackcomposeapp.Topic.ExoPlayerResScreen
 import com.example.jetpackcomposeapp.Topic.SpeechToTextAndTTS
 import com.example.jetpackcomposeapp.Topic.UploadVideoScreen
+import com.example.jetpackcomposeapp.Topic.Canvas
 import com.example.jetpackcomposeapp.Topic.vc.VideoCallScreen
 import com.example.jetpackcomposeapp.View.HomeScreen
 import com.example.jetpackcomposeapp.View.ProfileScreen
@@ -43,6 +44,7 @@ private val uploadVideoDrawerItem = DrawerItem(route = "upload_video", title = "
 private val ttsSttDrawerItem = DrawerItem(route = "tts_stt", title = "TTS&STT")
 private val audioDrawerItem = DrawerItem(route = "audio_player", title = "Audio Player")
 private val videoCallDrawerItem = DrawerItem(route = "video_call", title = "VIDEO CALL")
+private val canvasDrawerItem = DrawerItem(route = "canvas", title = "Canvas")
 
 @Composable
 fun MainAppContainer(outerNavController: NavHostController) {
@@ -55,7 +57,8 @@ fun MainAppContainer(outerNavController: NavHostController) {
         uploadVideoDrawerItem +
         ttsSttDrawerItem +
         audioDrawerItem +
-        videoCallDrawerItem
+        videoCallDrawerItem +
+        canvasDrawerItem
     val currentTitle = drawerItems.firstOrNull { it.route == currentRoute }?.title ?: "Store"
 
     NavDrawerWithNavigation(
@@ -109,6 +112,7 @@ fun MainAppContainer(outerNavController: NavHostController) {
                 composable(ttsSttDrawerItem.route) { SpeechToTextAndTTS() }
                 composable(audioDrawerItem.route) { FullAudioPlayerScreen() }
                 composable(videoCallDrawerItem.route) { VideoCallScreen() }
+                composable(canvasDrawerItem.route) { Canvas() }
             }
         }
     }
