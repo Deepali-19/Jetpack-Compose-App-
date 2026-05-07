@@ -36,10 +36,15 @@ fun NavDrawerWithNavigation(
     currentRoute: String?,
     items: List<DrawerItem>,
     onNavigate: (String) -> Unit,
-    content: @Composable (PaddingValues) -> Unit
+    showTopBar: Boolean = true,
+    content: @Composable (PaddingValues, () -> Unit) -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val openDrawer: () -> Unit = {
+        scope.launch { drawerState.open() }
+        Unit
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -62,16 +67,20 @@ fun NavDrawerWithNavigation(
     ) {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = { Text(title) },
-                    navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu")
+                if (showTopBar) {
+                    TopAppBar(
+                        title = { Text(title) },
+                        navigationIcon = {
+                            IconButton(onClick = openDrawer) {
+                                Icon(Icons.Default.Menu, contentDescription = "Menu")
+                            }
                         }
-                    }
-                )
+                    )
+                }
             },
-            content = content
+            content = { paddingValues ->
+                content(paddingValues, openDrawer)
+            }
         )
     }
 }

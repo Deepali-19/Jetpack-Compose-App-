@@ -28,6 +28,7 @@ import com.example.jetpackcomposeapp.Topic.ExoPlayerResScreen
 import com.example.jetpackcomposeapp.Topic.SpeechToTextAndTTS
 import com.example.jetpackcomposeapp.Topic.UploadVideoScreen
 import com.example.jetpackcomposeapp.Topic.Canvas
+import com.example.jetpackcomposeapp.Topic.MotionScrollScreen
 import com.example.jetpackcomposeapp.Topic.vc.VideoCallScreen
 import com.example.jetpackcomposeapp.View.HomeScreen
 import com.example.jetpackcomposeapp.View.ProfileScreen
@@ -45,6 +46,7 @@ private val ttsSttDrawerItem = DrawerItem(route = "tts_stt", title = "TTS&STT")
 private val audioDrawerItem = DrawerItem(route = "audio_player", title = "Audio Player")
 private val videoCallDrawerItem = DrawerItem(route = "video_call", title = "VIDEO CALL")
 private val canvasDrawerItem = DrawerItem(route = "canvas", title = "Canvas")
+private val motionDrawerItem = DrawerItem(route = "motion_screen", title = "Motion Sceern")
 
 @Composable
 fun MainAppContainer(outerNavController: NavHostController) {
@@ -58,13 +60,15 @@ fun MainAppContainer(outerNavController: NavHostController) {
         ttsSttDrawerItem +
         audioDrawerItem +
         videoCallDrawerItem +
-        canvasDrawerItem
+        canvasDrawerItem +
+        motionDrawerItem
     val currentTitle = drawerItems.firstOrNull { it.route == currentRoute }?.title ?: "Store"
 
     NavDrawerWithNavigation(
         title = currentTitle,
         currentRoute = currentRoute,
         items = drawerItems,
+        showTopBar = currentRoute != motionDrawerItem.route,
         onNavigate = { route ->
             innerNavController.navigate(route) {
                 popUpTo(innerNavController.graph.findStartDestination().id) {
@@ -74,7 +78,7 @@ fun MainAppContainer(outerNavController: NavHostController) {
                 restoreState = true
             }
         }
-    ) { innerPadding ->
+    ) { innerPadding, openDrawer ->
         androidx.compose.material3.Scaffold(
             bottomBar = {
                 NavigationBar {
@@ -113,6 +117,7 @@ fun MainAppContainer(outerNavController: NavHostController) {
                 composable(audioDrawerItem.route) { FullAudioPlayerScreen() }
                 composable(videoCallDrawerItem.route) { VideoCallScreen() }
                 composable(canvasDrawerItem.route) { Canvas() }
+                composable(motionDrawerItem.route) { MotionScrollScreen(onMenuClick = openDrawer) }
             }
         }
     }
